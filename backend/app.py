@@ -4,6 +4,8 @@ from flask_cors import CORS
 import google.generativeai as genai
 from dotenv import load_dotenv
 import json
+import firebase_admin
+from firebase_admin import credentials, firestore
 
 # Carregar variáveis de ambiente
 load_dotenv()
@@ -11,6 +13,20 @@ load_dotenv()
 app = Flask(__name__)
 # Habilitar CORS para permitir requisições do React
 CORS(app)
+
+# Inicializar Firebase
+try:
+    if os.path.exists("firebase-credentials.json"):
+        cred = credentials.Certificate("firebase-credentials.json")
+        firebase_admin.initialize_app(cred)
+        db = firestore.client()
+        print("Firebase inicializado com sucesso!")
+    else:
+        db = None
+        print("Aviso: firebase-credentials.json não encontrado. Os treinos não serão salvos no banco.")
+except Exception as e:
+    db = None
+    print(f"Erro ao inicializar Firebase: {e}")
 
 # Configurar a API do Gemini
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
@@ -28,6 +44,7 @@ def generate_workout():
     if not data:
         return jsonify({"error": "Dados inválidos fornecidos."}), 400
 
+    nome = data.get('nome', 'Aluno Desconhecido')
     objetivos = data.get('objetivos', 'Melhorar o condicionamento físico')
     restricoes = data.get('restricoes', 'Nenhuma')
     dias_por_semana = data.get('diasPorSemana', 3)
@@ -99,6 +116,23 @@ def generate_workout():
             response_text = response_text[:-3]
         
         workout_data = json.loads(response_text.strip())
+        
+        # Salvar no Firebase
+        if db:
+            try:
+                db.collection("treinos").add({
+                    "nome": nome,
+                    "objetivos": objetivos,
+                    "restricoes": restricoes,
+                    "dias_por_semana": dias_por_semana,
+                    "nivel": nivel,
+                    "treino": workout_data,
+                    "data": firestore.SERVER_TIMESTAMP
+                })
+                print(f"Treino salvo com sucesso para {nome}")
+            except Exception as e:
+                print(f"Erro ao salvar no Firebase: {e}")
+                
         return jsonify(workout_data), 200
     except Exception as e:
         print(f"Erro ao gerar treino: {e}")

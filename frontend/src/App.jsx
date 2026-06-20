@@ -3,6 +3,7 @@ import axios from 'axios';
 
 function App() {
   const [formData, setFormData] = useState({
+    nome: '',
     objetivos: '',
     restricoes: '',
     diasPorSemana: 3,
@@ -44,6 +45,20 @@ function App() {
 
       <div className="glass-card">
         <form onSubmit={generateWorkout}>
+          <div className="form-group">
+            <label htmlFor="nome">Qual o seu nome?</label>
+            <input 
+              type="text" 
+              id="nome" 
+              name="nome" 
+              className="form-control" 
+              placeholder="Ex: João, Maria..."
+              value={formData.nome}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
           <div className="form-group">
             <label htmlFor="objetivos">O que você deseja melhorar no seu corpo?</label>
             <input 
