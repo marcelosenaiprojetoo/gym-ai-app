@@ -85,8 +85,10 @@ def generate_workout():
     Atue como um Personal Trainer de elite. Crie um plano de treino para uma semana baseado nas informações do aluno:
     - Objetivos corporais: {objetivos}
     - Restrições médicas/físicas: {restricoes}
-    - Frequência: {dias_por_semana} dias por semana
+    - Frequência estrita: EXATAMENTE {dias_por_semana} dias por semana
     - Nível de experiência: {nivel}
+    
+    REGRA CRÍTICA: Você DEVE gerar exatamente {dias_por_semana} dias de treino. O array 'plano' no JSON final DEVE conter exatamente {dias_por_semana} objetos (um para cada dia de treino). NÃO crie mais dias do que o solicitado!
     
     Retorne o resultado EXCLUSIVAMENTE em formato JSON. O JSON deve ter a seguinte estrutura:
     {{
@@ -98,8 +100,8 @@ def generate_workout():
                     {{"nome": "Supino Reto", "series": 3, "repeticoes": "10-12", "descanso": "60s"}},
                     ...
                 ]
-            }},
-            ...
+            }}
+            ... (A quantidade de itens aqui DEVE ser exatamente {dias_por_semana})
         ],
         "dicas_extras": ["dica 1", "dica 2"]
     }}
