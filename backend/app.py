@@ -132,6 +132,13 @@ def generate_workout():
                 print(f"Treino salvo com sucesso para {nome}")
             except Exception as e:
                 print(f"Erro ao salvar no Firebase: {e}")
+        else:
+            # Injeta o aviso no frontend de que não foi salvo
+            mensagem_aviso = "⚠️ Observação: Este treino foi gerado com sucesso, mas NÃO foi salvo no banco de dados porque o arquivo de configuração (firebase-credentials.json) ainda não foi adicionado ao sistema."
+            if "dicas_extras" in workout_data:
+                workout_data["dicas_extras"].append(mensagem_aviso)
+            else:
+                workout_data["dicas_extras"] = [mensagem_aviso]
                 
         return jsonify(workout_data), 200
     except Exception as e:
